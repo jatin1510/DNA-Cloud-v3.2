@@ -57,7 +57,7 @@ def file2DNA(fileName, fileId, signalStatus):
     currLen = 20 + totalLen
     lenOfS3 = 25 - (currLen % 25)
     S3 = '0'*lenOfS3
-    dnaString1 = ExtraModules.encodeSTR(S3+S2, prevBase)
+    dnaString1 = ExtraModules.encodeSTR(S2, prevBase)
     chunkManager.addString(dnaString1)
     chunkManager.close()
     signalStatus.emit('100')
