@@ -24,6 +24,7 @@ import HuffmanDecodeManager
 
 
 def decode(filename, signalStatus):
+
     generateTrits(filename, signalStatus)
     huffmanDecode(filename, signalStatus)
 
@@ -84,7 +85,12 @@ def getTrits(payload, prevBase):
 
 def huffmanDecode(filename, signalStatus):
     tempfile = filename[:-5]+'.temp'
-    with io.open(filename[:-5], "wb") as OutputFile, io.open(tempfile, "rb") as tempFileToRead:
+    #print(tempfile)
+    file_name1, file_extension1 = os.path.splitext(filename)
+    new_file_name = f"{file_name1}_decoded_file{file_extension1}"
+    new_file_path = os.path.join(os.path.dirname(filename), new_file_name)
+    #print(new_file_path)
+    with io.open(new_file_path, "wb") as OutputFile, io.open(tempfile, "rb") as tempFileToRead:
         y = HuffmanDecodeManager.HuffmanDecodeManager(OutputFile, signalStatus)
         y.readFromFile(tempFileToRead, lengthfromS2(tempFileToRead), os.path.getsize(tempfile))
         y.close()

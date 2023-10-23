@@ -58,7 +58,13 @@ def decodeGolay(fileToRead, signalStatus):
 
     fileName = ''.join(fileNameList)
     # finalFileName = fileName + extension
-    outputFile = io.open(fileToRead[:-5], "wb")  # decoded FILE object
+
+    file_name1, file_extension1 = os.path.splitext(fileToRead[:-5])
+    new_file_name = f"{file_name1}_decoded_file{file_extension1}"
+    new_file_path = os.path.join(os.path.dirname(fileToRead[:-5]), new_file_name)
+    #print(fileToRead)
+    #print(new_file_path)
+    outputFile = io.open(new_file_path, "wb")  # decoded FILE object
 
     percentageCompleted = (countOfBytes*1.00/fileLength)*100
     countOfChunks = 0
