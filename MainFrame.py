@@ -32,28 +32,12 @@ import webbrowser
 
 # Generalize Error 
     
-class CustomErrorBox(QDialog):
-    def __init__(self, parent=None):
-        super(CustomErrorBox, self).__init__(parent)
-        self.setWindowTitle("Encode")
-        self.initUI()
-
-    def initUI(self):
-        self.selectionComboBox = QComboBox()
-        encodings = ['Goldman', 'Golay']
-        self.selectionComboBox.addItems(encodings)
-
-        # OK and Cancel buttons
-        self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.selectionComboBox)
-        layout.addWidget(self.buttons)
-        self.setLayout(layout)
-
-        self.buttons.accepted.connect(self.accept)
-        self.buttons.rejected.connect(self.reject)
+def Error(errorMessage):
+    msg = QMessageBox()
+    msg.setWindowTitle("Error")
+    msg.setText(errorMessage)
+    msg.setIcon(QMessageBox.Critical)
+    x = msg.exec_()
         
 # This object carries out encoding action of certain type
 
@@ -88,15 +72,11 @@ class DecodeThread(QThread):
         self.parent = parent
 
     def run(self):
-        if(self.fileName[-4:]=="dnac"):
-            if self.typeOfAction == 2:    # Goldman Decoding
-                GoldmanDecoding.decodeFile(self.fileName, self.signalStatus)
-            elif self.typeOfAction == 3:   # Golay Decoding
-                GolayDecode.decodeFile(self.fileName, self.signalStatus)
-        else:
-            x = CustomErrorBox(self.parent)
-            x.exec_()
-            # print("error")
+        if self.typeOfAction == 2:    # Goldman Decoding
+            GoldmanDecoding.decodeFile(self.fileName, self.signalStatus)
+        elif self.typeOfAction == 3:   # Golay Decoding
+            GolayDecode.decodeFile(self.fileName, self.signalStatus)
+        # print("error")
         self.signalStatus.emit('Idle.')  # Indicating action is finished
 
 # This object shows dialouge box for selecting encoding type
@@ -235,6 +215,16 @@ class ActionUI(QFrame):
     def addLink(self, linkToFile):
         if not os.path.isfile(linkToFile):
             return
+        
+        reverseFilename = linkToFile[::-1]
+        indexDot = reverseFilename.find('.')
+        if indexDot == -1:
+            return
+        
+        actionType = getActionType(self.actionType)
+        if actionType > 1 and linkToFile[-1*indexDot:] != "dnac":
+            Error("File is not in .dnac format!!")
+            return
 
         textView = QLabel(linkToFile)
         textView.setStyleSheet(
@@ -256,7 +246,7 @@ class ActionUI(QFrame):
 
         self.noOfFiles = self.noOfFiles + 1
         self.addAction(self.progress, linkToFile,
-                       getActionType(self.actionType))
+                       actionType)
 
     def addAction(self, progressBar, fileName, encodingType):
         if len(self.processQueue) == 0:
