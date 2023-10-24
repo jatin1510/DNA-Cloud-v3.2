@@ -32,6 +32,7 @@ import GolayDictionary
 fileIdTrits = 2  # default to support upto 9 files
 regularChunkSize = 0
 mulength = 0
+fileExtension = None
 #
 #	Chunk architecture of GOD chunk:
 #					 guard trit
@@ -115,6 +116,7 @@ def findChunkIdLength(fileToRead):
 
     else:
         GodChunk = inputFile.readline()
+        _ = inputFile.readline()  # extension chunk
         GodChunk = inputFile.readline() #Updated GodChunk to next line because first line contains number of chunks
 
 
@@ -148,7 +150,9 @@ def refine(filename, signalStatus1):
     with io.open(filename, "r") as fileToRead, io.open(filename[:-5]+'.temp', "w") as OutputFile:
         fileToRead = io.open(filename, 'r')
         chunks = fileToRead.readlines()
-        chunks = chunks[1:]   # to remove the first line of .dnac file 
+        global fileExtension
+        fileExtension = chunks[1][:-1]
+        chunks = chunks[2:]   # to remove the first line of .dnac file 
         global estimatedTime
         estimatedTime = len(chunks)*math.ceil(math.log(len(chunks), 2))
         for chunk in chunks:

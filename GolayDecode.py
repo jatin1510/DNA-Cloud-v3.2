@@ -56,15 +56,7 @@ def decodeGolay(fileToRead, signalStatus):
         countOfBytes = countOfBytes + len(fileNameChunk)
         fileNameList.append(getString(fileNameChunk[1:-1*extraTrits]))
 
-    fileName = ''.join(fileNameList)
-    # finalFileName = fileName + extension
-
-    file_name1, file_extension1 = os.path.splitext(fileToRead[:-5])
-    new_file_name = f"{file_name1}_decoded_file{file_extension1}"
-    new_file_path = os.path.join(os.path.dirname(fileToRead[:-5]), new_file_name)
-    #print(fileToRead)
-    #print(new_file_path)
-    outputFile = io.open(new_file_path, "wb")  # decoded FILE object
+    outputFile = io.open(fileToRead[:-5]+"_decoded"+BeforeGolayDecode.fileExtension, "wb")  # decoded FILE object
 
     percentageCompleted = (countOfBytes*1.00/fileLength)*100
     countOfChunks = 0

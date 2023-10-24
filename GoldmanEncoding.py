@@ -28,9 +28,12 @@ import os
 
 def file2DNA(fileName, fileId, signalStatus):
     totalLen = 0
+    indexDot = fileName.rfind('.')
+    extension = fileName[indexDot:]
     myFile = io.open(fileName, "rb")
-    outFile = io.open(fileName+'.dnac', "w")
+    outFile = io.open(fileName[:indexDot]+'.dnac', "w")
     outFile.write("                                              \n")  # writing a blank line in .dnac file so that .seek() function does not over-write the DNA string while writing number of chunks
+    outFile.write(extension+'\n')
     chunkManager = ChunkManager1.ChunkManager(outFile, fileId)
     prevBase = 'A'
     countOfBytes = 0
@@ -56,7 +59,6 @@ def file2DNA(fileName, fileId, signalStatus):
     S2 = ExtraModules.intToBase3(totalLen, 20)
     currLen = 20 + totalLen
     lenOfS3 = 25 - (currLen % 25)
-    S3 = '0'*lenOfS3
     dnaString1 = ExtraModules.encodeSTR(S2, prevBase)
     chunkManager.addString(dnaString1)
     chunkManager.close()

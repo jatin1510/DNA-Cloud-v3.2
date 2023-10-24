@@ -109,7 +109,11 @@ def encode(filePath,fileId,signalStatus):
     global inputFiletemp, numberOfChunks
     inputFile = io.open(filePath,"rb")
     inputFiletemp = io.open(filePath, "rb")
-    outputFile = io.open(filePath+'.dnac',"w")
+
+    indexDot = filePath.rfind('.')
+    extension = filePath[indexDot:]
+
+    outputFile = io.open(filePath[:indexDot]+'.dnac',"w")
 
     fileNameWithExtension = getFileNameWithExtensionFromPath(filePath)
     fileName,fileExtension = getFileNameAndExtension(fileNameWithExtension)
@@ -124,6 +128,9 @@ def encode(filePath,fileId,signalStatus):
     numberOfFileDataChunks = int(math.ceil(fileLength/9.0))
     numberOfChunks = numberOfFileNameChunks + numberOfExtensionChunks + numberOfFileDataChunks
     outputFile.write(str('Number of Chunks = ' + str(numberOfChunks) + '\n'))
+
+    outputFile.write(extension+'\n')
+
     mu=int( math.ceil( math.log(numberOfChunks,3) ) ) #number of trits required to address chunk indices
    
     # creating the god chunk 

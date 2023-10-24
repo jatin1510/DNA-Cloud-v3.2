@@ -22,6 +22,8 @@ import io
 import os
 import HuffmanDecodeManager
 
+fileExtension = None
+
 
 def decode(filename, signalStatus):
 
@@ -37,6 +39,9 @@ def generateTrits(filename, signalStatus):
     chunkCount = 0
     with io.open(filename, "r") as fileToRead, io.open(filename[:-5]+'.temp', "w") as OutputFile:
         firstline = fileToRead.readline()    # reading the first line containing "Number of Chunks:" before reading DNA string
+        
+        global fileExtension
+        fileExtension = fileToRead.readline()[:-1]    # reading the second line containing "Extension:" before reading DNA string
         first = True
         prevBase = 'A'
         rc = 1
@@ -85,12 +90,8 @@ def getTrits(payload, prevBase):
 
 def huffmanDecode(filename, signalStatus):
     tempfile = filename[:-5]+'.temp'
-    #print(tempfile)
-    file_name1, file_extension1 = os.path.splitext(filename)
-    new_file_name = f"{file_name1}_decoded_file{file_extension1}"
-    new_file_path = os.path.join(os.path.dirname(filename), new_file_name)
-    #print(new_file_path)
-    with io.open(new_file_path, "wb") as OutputFile, io.open(tempfile, "rb") as tempFileToRead:
+    global fileExtension
+    with io.open(filename[:-5]+"_decoded"+fileExtension, "wb") as OutputFile, io.open(tempfile, "rb") as tempFileToRead:
         y = HuffmanDecodeManager.HuffmanDecodeManager(OutputFile, signalStatus)
         y.readFromFile(tempFileToRead, lengthfromS2(tempFileToRead), os.path.getsize(tempfile))
         y.close()
