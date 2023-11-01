@@ -29,6 +29,7 @@ import golayEncoding
 import GolayDecode
 import EstimationUI
 import webbrowser
+import QRCode
 
 # Generalize Error 
     
@@ -56,6 +57,10 @@ class EncodeThread(QThread):
             GoldmanEncoding.encodeFile(self.fileName, self.signalStatus)
         elif self.typeOfAction == 1:   # Golay Encoding
             golayEncoding.encodeFile(self.fileName, self.signalStatus)
+            
+        indexDot = self.fileName.rfind('.')
+        fileNameWithoutExtension = self.fileName[:indexDot]
+        QRCode.generateQR(self.fileName, fileNameWithoutExtension)
         self.signalStatus.emit('Idle.')  # Indicating action is finished
 
 # This object carries out decoding action of certain type
