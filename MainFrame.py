@@ -40,6 +40,18 @@ def Error(errorMessage):
     msg.setIcon(QMessageBox.Critical)
     x = msg.exec_()
         
+# Takes input comment from user for file being encoded
+def TakeComment():
+    main_window = QMainWindow()
+
+    text, ok = QInputDialog.getText(main_window, 'Comment Box', 'Enter a comment:')
+
+    if ok and text.strip():
+        return text
+    else:
+        QMessageBox.warning(main_window, 'Warning', 'Please enter a non-empty value.', QMessageBox.Ok)
+        return None
+
 # This object carries out encoding action of certain type
 
 class EncodeThread(QThread):
@@ -57,10 +69,6 @@ class EncodeThread(QThread):
             GoldmanEncoding.encodeFile(self.fileName, self.signalStatus)
         elif self.typeOfAction == 1:   # Golay Encoding
             golayEncoding.encodeFile(self.fileName, self.signalStatus)
-            
-        indexDot = self.fileName.rfind('.')
-        fileNameWithoutExtension = self.fileName[:indexDot]
-        QRCode.generateQR(self.fileName, fileNameWithoutExtension)
         self.signalStatus.emit('Idle.')  # Indicating action is finished
 
 # This object carries out decoding action of certain type
@@ -265,7 +273,15 @@ class ActionUI(QFrame):
     def startAction(self):
         fileName = self.processQueue[0].fileName
         encodingType = self.processQueue[0].encodingType
+
         if (encodingType <= 1):
+
+            indexDot = fileName.rfind('.')
+            fileNameWithoutExtension = fileName[:indexDot]
+            input_comment = TakeComment()
+            
+            QRCode.generateQR("File name: " + fileName + "\nComment: " + input_comment, fileNameWithoutExtension)
+            
             self.thread = EncodeThread(fileName, encodingType)
         else:
             self.thread = DecodeThread(fileName, encodingType)
