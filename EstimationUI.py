@@ -1,6 +1,6 @@
 """
 ##########################################################################################
-Improvised Version: DNA Cloud 3.14
+Improvised Version: DNA Cloud 4.0.0
 Developers: Mihir Gohel, Natvar Prajapati, Shashank Upadhyay, Shivam Madlani, Vandan Bhuva
 Mentor: Prof. Manish K Gupta
 Website: www.guptalab.org/dnacloud
@@ -152,7 +152,7 @@ class Version(QDialog):
         self.initUI()
 
     def initUI(self):
-        self.temp_display = QLabel("Version of DNA Cloud : 3.14")
+        self.temp_display = QLabel("Version of DNA Cloud : 4.0.0")
         self.layout = QGridLayout()
         self.setLayout(self.layout)
         self.layout.addWidget(self.temp_display, 0, 0)
