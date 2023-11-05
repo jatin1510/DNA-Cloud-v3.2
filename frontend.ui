@@ -459,6 +459,34 @@
      <string>Select the file to be decoded</string>
     </property>
    </widget>
+   <zorder>frame_2</zorder>
+   <zorder>frame_3</zorder>
+   <zorder>progressBar</zorder>
+   <zorder>plainTextEdit_9</zorder>
+   <zorder>frame_4</zorder>
+   <zorder>plainTextEdit_16</zorder>
+   <zorder>progressBar_2</zorder>
+   <zorder>plainTextEdit_21</zorder>
+   <zorder>plainTextEdit_20</zorder>
+   <zorder>frame_5</zorder>
+   <zorder>pushButton</zorder>
+   <zorder>pushButton_2</zorder>
+   <zorder>plainTextEdit</zorder>
+   <zorder>plainTextEdit_6</zorder>
+   <zorder>plainTextEdit_4</zorder>
+   <zorder>plainTextEdit_8</zorder>
+   <zorder>plainTextEdit_7</zorder>
+   <zorder>plainTextEdit_2</zorder>
+   <zorder>plainTextEdit_3</zorder>
+   <zorder>plainTextEdit_5</zorder>
+   <zorder>plainTextEdit_18</zorder>
+   <zorder>plainTextEdit_10</zorder>
+   <zorder>plainTextEdit_11</zorder>
+   <zorder>plainTextEdit_13</zorder>
+   <zorder>plainTextEdit_17</zorder>
+   <zorder>plainTextEdit_14</zorder>
+   <zorder>plainTextEdit_15</zorder>
+   <zorder>plainTextEdit_12</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
