@@ -1,6 +1,6 @@
 """
 ##########################################################################################
-Improvised Version: DNA Cloud 4.0.0
+Improvised Version: DNA Cloud 3.14
 Developers: Mihir Gohel, Natvar Prajapati, Shashank Upadhyay, Shivam Madlani, Vandan Bhuva
 Mentor: Prof. Manish K Gupta
 Website: www.guptalab.org/dnacloud
@@ -30,6 +30,8 @@ import GolayDecode
 import EstimationUI
 import webbrowser
 import QRCode
+import re
+import time
 
 # Generalize Error 
     
@@ -40,16 +42,61 @@ def Error(errorMessage):
     msg.setIcon(QMessageBox.Critical)
     x = msg.exec_()
         
-# Takes input comment from user for file being encoded
+class InputDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowTitle('Multiple Input Dialog')
+
+        self.name_input = QLineEdit(self)
+        self.email_input = QLineEdit(self)
+        self.mobile_input = QLineEdit(self)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel('Name:', self))
+        layout.addWidget(self.name_input)
+        layout.addWidget(QLabel('Email:', self))
+        layout.addWidget(self.email_input)
+        layout.addWidget(QLabel('Mobile Number:', self))
+        layout.addWidget(self.mobile_input)
+
+        submit_button = QPushButton('Submit', self)
+        submit_button.clicked.connect(self.on_submit)
+        layout.addWidget(submit_button)
+
+    def on_submit(self):
+        name = self.name_input.text().strip()
+        email = self.email_input.text().strip()
+        mobile = self.mobile_input.text().strip()
+
+        # Validate email using a simple regular expression
+        email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+        if not email_pattern.fullmatch(email):
+            QMessageBox.warning(self, 'Warning', 'Please enter a valid email address.', QMessageBox.Ok)
+            return
+
+        # Validate mobile number using a simple pattern (10 digits)
+        mobile_pattern = re.compile(r'^\d{10}$')
+        if not mobile_pattern.fullmatch(mobile):
+            QMessageBox.warning(self, 'Warning', 'Please enter a valid 10-digit mobile number.', QMessageBox.Ok)
+            return
+
+        if name and email and mobile:
+            self.result = (name, email, mobile)
+            self.accept()
+        else:
+            QMessageBox.warning(self, 'Warning', 'Please enter values for all fields.', QMessageBox.Ok)
+
 def TakeComment():
-    main_window = QMainWindow()
+    dialog = InputDialog()
+    result = dialog.exec_()
 
-    text, ok = QInputDialog.getText(main_window, 'Comment Box', 'Enter a comment:')
-
-    if ok and text.strip():
-        return text
+    if result == QDialog.Accepted:
+        return dialog.result
     else:
-        QMessageBox.warning(main_window, 'Warning', 'Please enter a non-empty value.', QMessageBox.Ok)
         return None
 
 # This object carries out encoding action of certain type
@@ -278,9 +325,8 @@ class ActionUI(QFrame):
 
             indexDot = fileName.rfind('.')
             fileNameWithoutExtension = fileName[:indexDot]
-            input_comment = TakeComment()
-            
-            QRCode.generateQR("File name: " + fileName + "\nComment: " + input_comment, fileNameWithoutExtension)
+            input_details = TakeComment()
+            QRCode.generateQR("File name: " + fileName + "\nName: " + input_details[0] + "\nEmail: " + input_details[1] + "\nMobile Number: " + input_details[2] + "\nSample ID: " + input_details[1] + "_" + input_details[2] + "_" + str(time.time()), fileNameWithoutExtension)
             
             self.thread = EncodeThread(fileName, encodingType)
         else:
@@ -319,7 +365,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setWindowTitle('DNA 4.0.0')
+        self.setWindowTitle('DNA 3.14')
         self.setWindowIcon(QIcon("DNA_icon-8.png"))
         self.initUI()
 
