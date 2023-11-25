@@ -32,6 +32,7 @@ import webbrowser
 import QRCode
 import re
 import time
+import Error_Detection_Correction
 
 # Generalize Error 
     
@@ -41,6 +42,13 @@ def Error(errorMessage):
     msg.setText(errorMessage)
     msg.setIcon(QMessageBox.Critical)
     x = msg.exec_()
+
+def show_success_popup():
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+    msg.setWindowTitle('Success')
+    msg.setText('Operation successful!')
+    msg.exec_()
         
 class InputDialog(QDialog):
     def __init__(self):
@@ -409,6 +417,10 @@ class MainWindow(QMainWindow):
         self.costEstimatorAction.setStatusTip(
             'Predicts approximate cost to encode in DNA')
         self.costEstimatorAction.triggered.connect(self.showCostEstimator)
+        self.clusterAction = QAction('&Clustering error correction', self)
+        # self.clusterAction.setShortcut('Ctrl')
+        self.clusterAction.setStatusTip('Clustering error correcting code')
+        self.clusterAction.triggered.connect(self.cluster)
 
     #	self.barcodeGeneratorAction = QAction('&Generate Barcode',self)
     #	self.barcodeGeneratorAction.setStatusTip('Generate Barcode')
@@ -419,6 +431,7 @@ class MainWindow(QMainWindow):
         toolsMenu.addAction(self.storageEstimatorAction)
         toolsMenu.addAction(self.costEstimatorAction)
     #	toolsMenu.addAction(self.barcodeGeneratorAction)
+        toolsMenu.addAction(self.clusterAction)
 
         # Actions for Follow us
         self.Gupta_Lab = QAction('&Gupta Lab', self)
@@ -522,8 +535,13 @@ class MainWindow(QMainWindow):
         decodeAction = self.getDecodeActionUI()
         decodeAction.addLink(str(openfile))
 
-    # def showBarcode(self) :  # Not supported Yet
-    #	return
+    def cluster(self):
+        openfile = QFileDialog.getOpenFileName(self)[0]
+        x = Error_Detection_Correction.Cluster(openfile)
+        if(x.clusterFun() == 1):
+            show_success_popup()
+        else:
+            Error("Error occured!!")
 
     def showMemoryEstimator(self):
         est = EstimationUI.MemoryEstimation(self)
