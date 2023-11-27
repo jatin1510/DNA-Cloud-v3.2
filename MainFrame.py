@@ -30,6 +30,7 @@ import GolayDecode
 import EstimationUI
 import webbrowser
 import QRCode
+import BarCode
 import re
 import time
 import Error_Detection_Correction
@@ -50,6 +51,53 @@ def show_success_popup():
     msg.setText('Operation successful!')
     msg.exec_()
         
+class ShadowButton(QPushButton):
+    def __init__(self, text, parent=None):
+        super(ShadowButton, self).__init__(text, parent)
+        self._shadowOffset = 2
+        self._shadowColor = QColor(50, 50, 50, 50)
+        self._baseColor = QColor(30, 144, 255)  # Dodger Blue
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        # Draw the button with a gradient color
+        grad = QLinearGradient(0, 0, 0, self.height())
+        grad.setColorAt(0, self._baseColor)
+        grad.setColorAt(1, QColor(0, 0, 205))  # Medium Blue
+        painter.setBrush(grad)
+        painter.setPen(Qt.NoPen)
+        painter.drawRoundedRect(0, 0, self.width(), self.height(), 8, 8)
+
+        # Draw button text
+        painter.setPen(Qt.white)
+        painter.drawText(self.rect(), Qt.AlignCenter, self.text())
+
+        # Draw button shadow
+        painter.setBrush(self._shadowColor)
+        painter.setPen(Qt.NoPen)
+        painter.drawRoundedRect(self._shadowOffset, self._shadowOffset, self.width() - 4, self.height() - 4, 8, 8)
+
+    def setColor(self, color):
+        if self._baseColor != color:
+            self._baseColor = color
+            self.update()
+
+    def color(self):
+        return self._baseColor
+
+    def setShadowOffset(self, offset):
+        if self._shadowOffset != offset:
+            self._shadowOffset = offset
+            self.update()
+
+    def shadowOffset(self):
+        return self._shadowOffset
+
+    color_ = pyqtProperty(QColor, color, setColor)
+    shadowOffset_ = pyqtProperty(int, shadowOffset, setShadowOffset)
+
 class InputDialog(QDialog):
     def __init__(self):
         super().__init__()
@@ -57,23 +105,68 @@ class InputDialog(QDialog):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle('Contact details:')
+        self.setWindowTitle('Contact Details')
+        self.setGeometry(225, 400, 500, 300)  # Increase window size
 
-        self.name_input = QLineEdit(self)
-        self.email_input = QLineEdit(self)
-        self.mobile_input = QLineEdit(self)
+        # Remove Help button
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
-        layout = QVBoxLayout(self)
-        layout.addWidget(QLabel('Name:', self))
-        layout.addWidget(self.name_input)
-        layout.addWidget(QLabel('Email:', self))
-        layout.addWidget(self.email_input)
-        layout.addWidget(QLabel('Mobile Number:', self))
-        layout.addWidget(self.mobile_input)
+        title_font = QFont()
+        title_font.setBold(True)
+        title_font.setPointSize(16)
 
-        submit_button = QPushButton('Submit', self)
+        self.name_label = QLabel('Name:')
+        self.name_label.setStyleSheet('color: #000000; font-size: 16px; font-weight: bold;')
+
+        label_font = QFont()
+        label_font.setPointSize(14)
+
+        self.name_label.setFont(label_font)
+        self.name_input = QLineEdit()
+        self.name_input.setPlaceholderText('Enter your name')
+
+        self.email_label = QLabel('Email:')
+        self.email_label.setStyleSheet('color: #000000; font-size: 16px; font-weight: bold;')
+        self.email_label.setFont(label_font)
+
+        self.email_input = QLineEdit()
+        self.email_input.setPlaceholderText('Enter your email')
+
+        self.mobile_label = QLabel('Mobile Number:')
+        self.mobile_label.setStyleSheet('color: #000000; font-size: 16px; font-weight: bold;')
+        self.mobile_label.setFont(label_font)
+
+        self.mobile_input = QLineEdit()
+        self.mobile_input.setPlaceholderText('Enter your mobile number')
+
+        submit_button = ShadowButton('Submit')
         submit_button.clicked.connect(self.on_submit)
-        layout.addWidget(submit_button)
+
+        # Create a form layout
+        form_layout = QFormLayout()
+        form_layout.addRow(self.name_label, self.name_input)
+        form_layout.addRow(self.email_label, self.email_input)
+        form_layout.addRow(self.mobile_label, self.mobile_input)
+
+        main_layout = QVBoxLayout(self)
+        main_layout.addLayout(form_layout)
+        main_layout.addWidget(submit_button)
+
+        # Apply a more colorful stylesheet
+        self.setStyleSheet('''
+            QDialog {
+                background-color: #f0f0f0;
+                color: #333;
+            }
+            QLineEdit {
+                background-color: #ffffff;
+                color: #333;
+                border: 2px solid #1e90ff;
+                border-radius: 8px;
+                padding: 10px;
+                font-size: 14px;
+            }
+        ''')
 
     def on_submit(self):
         name = self.name_input.text().strip()
@@ -83,20 +176,23 @@ class InputDialog(QDialog):
         # Validate email using a simple regular expression
         email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
         if not email_pattern.fullmatch(email):
-            QMessageBox.warning(self, 'Warning', 'Please enter a valid email address.', QMessageBox.Ok)
+            self.show_warning('Please enter a valid email address.')
             return
 
         # Validate mobile number using a simple pattern (10 digits)
         mobile_pattern = re.compile(r'^\d{10}$')
         if not mobile_pattern.fullmatch(mobile):
-            QMessageBox.warning(self, 'Warning', 'Please enter a valid 10-digit mobile number.', QMessageBox.Ok)
+            self.show_warning('Please enter a valid 10-digit mobile number.')
             return
 
         if name and email and mobile:
             self.result = (name, email, mobile)
             self.accept()
         else:
-            QMessageBox.warning(self, 'Warning', 'Please enter values for all fields.', QMessageBox.Ok)
+            self.show_warning('Please enter values for all fields.')
+
+    def show_warning(self, message):
+        QMessageBox.warning(self, 'Warning', message, QMessageBox.Ok)
 
 def TakeComment():
     dialog = InputDialog()
@@ -198,7 +294,7 @@ class DecodeSelection(QDialog):
 
 
 # Selects one of the type of encoding/decoding (Golay or Goldman)
-def getActionType(typeOfAction, parent=None):
+def getActionType(typeOfAction,fileName = None, parent=None):
     if typeOfAction == 'E':   # Encoding Action
         dialog = EncodeSelection(parent)
         result = dialog.exec_()
@@ -212,16 +308,22 @@ def getActionType(typeOfAction, parent=None):
         else:
             return -1
     else:
-        dialog = DecodeSelection(parent)
-        result = dialog.exec_()
-        if(result == 1):
-            decodingType = str(dialog.selectionComboBox.currentText())
+        # dialog = DecodeSelection(parent)
+        # result = dialog.exec_()
+        myFile = io.open(fileName, "r")
+        _ = myFile.readline()
+        _ = myFile.readline()
+        try:
+            line = myFile.readline()
+            decodingType = line[9:-1]
+            print(decodingType)
+            # decodingType = str(dialog.selectionComboBox.currentText())
             if decodingType == 'Goldman':
                 return 2
             elif decodingType == 'Golay':
                 return 3
             return -1
-        else:
+        except:
             return -1
 
 
@@ -289,7 +391,7 @@ class ActionUI(QFrame):
         if indexDot == -1:
             return
         
-        actionType = getActionType(self.actionType)
+        actionType = getActionType(self.actionType,linkToFile)
         if actionType > 1 and linkToFile[-1*indexDot:] != "dnac":
             Error("File is not in .dnac format!!")
             return
@@ -334,9 +436,14 @@ class ActionUI(QFrame):
             indexDot = fileName.rfind('.')
             fileNameWithoutExtension = fileName[:indexDot]
             input_details = TakeComment()
-            QRCode.generateQR("File name: " + fileName + "\nName: " + input_details[0] + "\nEmail: " + input_details[1] + "\nMobile Number: " + input_details[2] + "\nSample ID: " + input_details[1] + "_" + input_details[2] + "_" + str(time.time()), fileNameWithoutExtension)
-            
-            self.thread = EncodeThread(fileName, encodingType)
+            if(input_details):
+                encodedData = BarCode.hash_to_13_digits(input_details[2] + str(time.time()))
+                QRCode.generateQR("File name: " + os.path.basename(fileName) + "\nName: " + input_details[0] + "\nEmail: " + input_details[1] + "\nMobile Number: " + input_details[2] + "\nSample ID: " + encodedData, fileNameWithoutExtension)
+                BarCode.generateBarcode(str(encodedData), fileNameWithoutExtension)
+
+                self.thread = EncodeThread(fileName, encodingType)
+            else:
+                return
         else:
             self.thread = DecodeThread(fileName, encodingType)
         self.thread.signalStatus.connect(self.updateStatus)

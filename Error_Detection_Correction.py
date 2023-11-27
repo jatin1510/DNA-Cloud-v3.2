@@ -92,7 +92,7 @@ class Cluster:
 
                 for j in range(num_strands):
                     strand_input = file.readline().strip()
-                    cluster.append(list(strand_input))
+                    cluster.append(list(strand_input.upper()))  # Convert to uppercase ACGT
 
                 clusters.append(cluster)
 
