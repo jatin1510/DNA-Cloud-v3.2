@@ -117,6 +117,9 @@ def findChunkIdLength(fileToRead):
     else:
         GodChunk = inputFile.readline()
         _ = inputFile.readline()  # extension chunk
+        _ = inputFile.readline()  # extension chunk
+        _ = inputFile.readline()  # extension chunk
+        _ = inputFile.readline()  # extension chunk
         GodChunk = inputFile.readline() #Updated GodChunk to next line because first line contains number of chunks
 
 
@@ -154,7 +157,7 @@ def refine(filename, signalStatus1):
             global fileExtension
             fileExtension = chunks[1][:-1]
             chunks = chunks[5:]   # to remove the first line of .dnac file
-            print(chunks)
+            # print(chunks)
             global estimatedTime
             estimatedTime = len(chunks)*math.ceil(math.log(len(chunks), 2))
             for chunk in chunks:

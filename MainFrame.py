@@ -57,7 +57,7 @@ class InputDialog(QDialog):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle('Multiple Input Dialog')
+        self.setWindowTitle('Contact details:')
 
         self.name_input = QLineEdit(self)
         self.email_input = QLineEdit(self)
@@ -590,11 +590,11 @@ class MainWindow(QMainWindow):
 
     def showCredits(self):
         webbrowser.open(
-            "https://drive.google.com/file/d/1JRzBQjYBU8yQJHs5Ik9Dg9YIxAHmaaB8/view", new=2)
+            "https://drive.google.com/drive/folders/1iNodqe0ZBzkXpIeKAwVlgVoffA-3vuRJ?usp=sharing", new=2)
 
     def showAbout_Us(self):
         webbrowser.open(
-            "https://drive.google.com/file/d/1LSCGnnHnLynDtoSff9n7kCLrhymhSCD7/view", new=2)
+            "https://www.guptalab.org/dnacloud/", new=2)
 
 
 app = QApplication(sys.argv)

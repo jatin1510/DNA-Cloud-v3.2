@@ -35,8 +35,8 @@ def getDirectory(fileName):
 
 def decodeGolay(fileToRead, signalStatus):
     try:
+        # print("perDone")
         perDone = BeforeGolayDecode.refine(fileToRead, signalStatus)
-        print(perDone)
         perLeft = 100 - perDone
         countOfBytes = 0  # for calculating percentage
         global percentageCompleted

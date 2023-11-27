@@ -36,7 +36,7 @@ class Cluster:
 
                     # Print the corrected clusters to the file
                     for i, corrected_cluster in enumerate(corrected_clusters):
-                        output_file.write(f"\nCluster {i + 1} after error correction:\n")
+                        output_file.write(f"\nCluster {i} after error correction:\n")
                         for corrected_strand in corrected_cluster:
                             output_file.write(''.join(corrected_strand) + '\n')
                         output_file.write('\n')
