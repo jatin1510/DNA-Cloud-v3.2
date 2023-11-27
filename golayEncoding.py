@@ -130,6 +130,8 @@ def encode(filePath,fileId,signalStatus):
     outputFile.write(str('Number of Chunks = ' + str(numberOfChunks) + '\n'))
 
     outputFile.write(extension+'\n')
+    outputFile.write("Method : Golay\n")
+    outputFile.write("Visit us at : https://www.guptalab.org/\n\n")
 
     mu=int( math.ceil( math.log(numberOfChunks,3) ) ) #number of trits required to address chunk indices
    

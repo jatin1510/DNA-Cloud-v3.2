@@ -34,51 +34,55 @@ def getDirectory(fileName):
 
 
 def decodeGolay(fileToRead, signalStatus):
-    perDone = BeforeGolayDecode.refine(fileToRead, signalStatus)
-    perLeft = 100 - perDone
-    countOfBytes = 0  # for calculating percentage
-    global percentageCompleted
-    global fileLength
-    fileToRead = fileToRead[0:-5]+'.temp'
-    GolayDictionary.initDict()
-    inputFile = io.open(fileToRead, "r")   # file object for .dnac file
-    headerChunk = inputFile.readline()    # main chunk of .dnac file
-    countOfBytes = countOfBytes + len(headerChunk)
-    extensionChunk = inputFile.readline()  # extension chunk for file
-    countOfBytes = countOfBytes + len(extensionChunk)
-    noOfChunksForFileName = getChunksForFilename(headerChunk)
-    # 2 for FILE ID + 1 for PARITY + 1 FOR FLAG + CHUNK ID SIZE + 1 for \n
-    extraTrits = 2 + 1 + 1 + getNumberOfTritsForChunkID(headerChunk) + 1
-    extension = '.' + getString(extensionChunk[1:-1*extraTrits])
-    fileNameList = []
-    for i in range(1, noOfChunksForFileName+1):
-        fileNameChunk = inputFile.readline()
-        countOfBytes = countOfBytes + len(fileNameChunk)
-        fileNameList.append(getString(fileNameChunk[1:-1*extraTrits]))
+    try:
+        perDone = BeforeGolayDecode.refine(fileToRead, signalStatus)
+        print(perDone)
+        perLeft = 100 - perDone
+        countOfBytes = 0  # for calculating percentage
+        global percentageCompleted
+        global fileLength
+        fileToRead = fileToRead[0:-5]+'.temp'
+        GolayDictionary.initDict()
+        inputFile = io.open(fileToRead, "r")   # file object for .dnac file
+        headerChunk = inputFile.readline()    # main chunk of .dnac file
+        countOfBytes = countOfBytes + len(headerChunk)
+        extensionChunk = inputFile.readline()  # extension chunk for file
+        countOfBytes = countOfBytes + len(extensionChunk)
+        noOfChunksForFileName = getChunksForFilename(headerChunk)
+        # 2 for FILE ID + 1 for PARITY + 1 FOR FLAG + CHUNK ID SIZE + 1 for \n
+        extraTrits = 2 + 1 + 1 + getNumberOfTritsForChunkID(headerChunk) + 1
+        extension = '.' + getString(extensionChunk[1:-1*extraTrits])
+        fileNameList = []
+        for i in range(1, noOfChunksForFileName+1):
+            fileNameChunk = inputFile.readline()
+            countOfBytes = countOfBytes + len(fileNameChunk)
+            fileNameList.append(getString(fileNameChunk[1:-1*extraTrits]))
 
-    outputFile = io.open(fileToRead[:-5]+"_decoded"+BeforeGolayDecode.fileExtension, "wb")  # decoded FILE object
+        outputFile = io.open(fileToRead[:-5]+"_decoded"+BeforeGolayDecode.fileExtension, "wb")  # decoded FILE object
 
-    percentageCompleted = (countOfBytes*1.00/fileLength)*100
-    countOfChunks = 0
-    # maintaning previous base for differential decoding
-    prevBase = 'A'
-    for chunk in inputFile:
-        countOfChunks = countOfChunks + 1
-        countOfBytes = countOfBytes + len(chunk)
-        percentageCompleted = perDone + (countOfBytes*1.00/fileLength)*perLeft
-        if countOfChunks % 1000 == 0:
-            signalStatus.emit(str(int(percentageCompleted)))
-        data = chunk[1:-1*extraTrits]
-        trits = ExtraModules.getTrits(data, prevBase)
-        o = len(data)
-        if o != 0:
-            prevBase = data[-1]
-        
-        outputFile.write(bytearray(GolayDictionary.decodeSTR(trits)))
-        
-    signalStatus.emit('100')  # task completed
-    inputFile.close()
-    os.remove(fileToRead)
+        percentageCompleted = (countOfBytes*1.00/fileLength)*100
+        countOfChunks = 0
+        # maintaning previous base for differential decoding
+        prevBase = 'A'
+        for chunk in inputFile:
+            countOfChunks = countOfChunks + 1
+            countOfBytes = countOfBytes + len(chunk)
+            percentageCompleted = perDone + (countOfBytes*1.00/fileLength)*perLeft
+            if countOfChunks % 1000 == 0:
+                signalStatus.emit(str(int(percentageCompleted)))
+            data = chunk[1:-1*extraTrits]
+            trits = ExtraModules.getTrits(data, prevBase)
+            o = len(data)
+            if o != 0:
+                prevBase = data[-1]
+
+            outputFile.write(bytearray(GolayDictionary.decodeSTR(trits)))
+
+        signalStatus.emit('100')  # task completed
+        inputFile.close()
+        os.remove(fileToRead)
+    except:
+        print("err")
 
 
 def getNumberOfTritsForChunkID(str1):

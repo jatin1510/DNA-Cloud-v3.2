@@ -147,16 +147,21 @@ def refine(filename, signalStatus1):
 
     # new line character included
     regularChunkSize = mulength + (1 + 99 + fileIdTrits + 1 + 1 + 1)
-    with io.open(filename, "r") as fileToRead, io.open(filename[:-5]+'.temp', "w") as OutputFile:
-        fileToRead = io.open(filename, 'r')
-        chunks = fileToRead.readlines()
-        global fileExtension
-        fileExtension = chunks[1][:-1]
-        chunks = chunks[2:]   # to remove the first line of .dnac file 
-        global estimatedTime
-        estimatedTime = len(chunks)*math.ceil(math.log(len(chunks), 2))
-        for chunk in chunks:
-            if chunk[0] == 'G' or chunk[0] == 'C':
-                chunk = ExtraModules.reverseComplement(chunk)
-            OutputFile.write(chunk)
-        return int((numberOfTimesComparatorCalled*1.00/(estimatedTime))*60)
+    try:
+        with io.open(filename, "r") as fileToRead, io.open(filename[:-5]+'.temp', "w") as OutputFile:
+            fileToRead = io.open(filename, 'r')
+            chunks = fileToRead.readlines()
+            global fileExtension
+            fileExtension = chunks[1][:-1]
+            chunks = chunks[5:]   # to remove the first line of .dnac file
+            print(chunks)
+            global estimatedTime
+            estimatedTime = len(chunks)*math.ceil(math.log(len(chunks), 2))
+            for chunk in chunks:
+                if chunk[0] == 'G' or chunk[0] == 'C':
+                    chunk = ExtraModules.reverseComplement(chunk)
+                OutputFile.write(chunk)
+            return int((numberOfTimesComparatorCalled*1.00/(estimatedTime))*60)
+    except:
+        print("err1")
+        return 1

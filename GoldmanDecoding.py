@@ -42,6 +42,9 @@ def generateTrits(filename, signalStatus):
         
         global fileExtension
         fileExtension = fileToRead.readline()[:-1]    # reading the second line containing "Extension:" before reading DNA string
+        _ = fileToRead.readline()
+        _ = fileToRead.readline()
+        _ = fileToRead.readline()
         first = True
         prevBase = 'A'
         rc = 1

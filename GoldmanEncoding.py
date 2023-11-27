@@ -34,6 +34,8 @@ def file2DNA(fileName, fileId, signalStatus):
     outFile = io.open(fileName[:indexDot]+'.dnac', "w")
     outFile.write("                                              \n")  # writing a blank line in .dnac file so that .seek() function does not over-write the DNA string while writing number of chunks
     outFile.write(extension+'\n')
+    outFile.write("Method : Goldman\n")
+    outFile.write("Visit us at : https://www.guptalab.org/\n\n")
     chunkManager = ChunkManager1.ChunkManager(outFile, fileId)
     prevBase = 'A'
     countOfBytes = 0

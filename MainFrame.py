@@ -1,6 +1,6 @@
 """
 ##########################################################################################
-Improvised Version: DNA Cloud 3.14
+Improvised Version: DNA Cloud 3.2
 Developers: Mihir Gohel, Natvar Prajapati, Shashank Upadhyay, Shivam Madlani, Vandan Bhuva
 Mentor: Prof. Manish K Gupta
 Website: www.guptalab.org/dnacloud
@@ -373,7 +373,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setWindowTitle('DNA 3.14')
+        self.setWindowTitle('DNA 3.2')
         self.setWindowIcon(QIcon("DNA_icon-8.png"))
         self.initUI()
 
@@ -579,10 +579,11 @@ class MainWindow(QMainWindow):
 
     def showUser_Manual(self):
         webbrowser.open(
-            "https://drive.google.com/file/d/1qWt68foUxf_lI9YLCyL2qR66Sj39AXej/view", new=2)
+            "https://drive.google.com/drive/folders/1iNodqe0ZBzkXpIeKAwVlgVoffA-3vuRJ?usp=sharing", new=2)
 
     def showProduct_Demo(self):
-        NULL
+        webbrowser.open(
+            "https://drive.google.com/drive/folders/1iNodqe0ZBzkXpIeKAwVlgVoffA-3vuRJ?usp=sharing", new=2)
 
     def showProduct_Feedback(self):
         webbrowser.open("https://forms.gle/jTY8FcgKeWrosqZ1A", new=2)
