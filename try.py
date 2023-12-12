@@ -1,41 +1,16 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
+import barcode
+from barcode.writer import ImageWriter
 
-class PopupExample(QWidget):
-    def __init__(self):
-        super().__init__()
+def generate_barcode(data, barcode_type='code128', output_path='barcode'):
+    # Generate the barcode
+    code = barcode.get(barcode_type, data, writer=ImageWriter())
 
-        self.initUI()
+    # Save the barcode to an image file
+    filename = f"{output_path}_{barcode_type}_{data}"
+    code.save(filename)
 
-    def initUI(self):
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Popup Example')
+    print(f"Barcode saved as {filename}")
 
-        self.btn_show_error = QPushButton('Show Error', self)
-        self.btn_show_error.setGeometry(20, 20, 120, 40)
-        self.btn_show_error.clicked.connect(self.show_error_popup)
-
-        self.btn_show_success = QPushButton('Show Success', self)
-        self.btn_show_success.setGeometry(160, 20, 120, 40)
-        self.btn_show_success.clicked.connect(self.show_success_popup)
-
-        self.show()
-
-    def show_error_popup(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Critical)
-        msg.setWindowTitle('Error')
-        msg.setText('An error occurred!')
-        msg.exec_()
-
-    def show_success_popup(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setWindowTitle('Success')
-        msg.setText('Operation successful!')
-        msg.exec_()
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = PopupExample()
-    sys.exit(app.exec_())
+# Example usage
+data_to_encode = "Hello1111111123"
+generate_barcode(data_to_encode)
