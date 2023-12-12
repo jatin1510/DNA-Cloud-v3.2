@@ -1,5 +1,4 @@
 # import EAN13 from barcode module
-from barcode import EAN13, EAN14
 import hashlib
 import barcode
 
@@ -23,7 +22,8 @@ def hash_to_13_digits(number):
 
 def generateBarcode(data, filename):
 
-    code = barcode.get('code128', data, writer=ImageWriter())
+    code128 = barcode.get_barcode_class('code128')
+    code = code128(data, writer=ImageWriter())
 
     # Save the barcode to an image file
     code.save(filename+'_bar')
