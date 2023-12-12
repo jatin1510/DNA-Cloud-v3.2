@@ -1,7 +1,7 @@
 """
 ##########################################################################################
 Improvised Version: DNA Cloud 3.2
-Developers: Mihir Gohel, Natvar Prajapati, Shashank Upadhyay, Shivam Madlani, Vandan Bhuva
+Developers: Jaimin Satani, Jatin Ranpariya, Devarshi Joshi, Arpan Singhala, Chaitri Gudhka, Mukund Ladani, Nikhil Vaghasiya
 Mentor: Prof. Manish K Gupta
 Website: www.guptalab.org/dnacloud
 This file shows UI related to Cost Estimation, Memory Estimation and other details
