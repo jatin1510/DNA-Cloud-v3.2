@@ -1,3 +1,20 @@
+"""
+##########################################################################################
+Improvised Version: DNA Cloud 3.2
+Developers: Jaimin Satani, Jatin Ranpariya, Devarshi Joshi, Arpan Singhala, Chaitri Gudhka, Mukund Ladani, Nikhil Vaghasiya
+Mentor: Prof. Manish K Gupta
+Website: www.guptalab.org/dnacloud
+This file is for clustering error correction code.
+This file will run on python 3.10.5
+##########################################################################################
+Author: Aayush Kapadia,Suparshva Mehta
+Project: DNA Cloud 3
+Graduate Mentor: Dixita Limbachya
+Mentor: Prof. Manish K Gupta
+Website: www.guptalab.org/dnacloud
+##########################################################################################
+"""
+
 class Cluster:
     def __init__(self, fileName):
         self.fileName = fileName
