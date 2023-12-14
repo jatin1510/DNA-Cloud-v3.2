@@ -5,9 +5,9 @@
 
 - DNA Cloud 3.2 is an updated version of DNA Cloud 3.14. In this software, the user can use two different algorithms i.e. Goldman and Golay to encode/decode any types of files.
 
-- This version includes the number of chunks of actual DNA required to store the given data, type of files(Ex. `.jpg`, `.txt`), and the method name which is used to encode the file. This info will be available in the .dnac file generated while encoding.
+- This version includes the number of chunks of actual DNA required to store the given data, the type of files(Ex. `.jpg`, `.txt`), and the method name which is used to encode the file. This info will be available in the .dnac file generated while encoding.
 
-- This version also includes the barcode and the QR code which store the following details
+- This version also includes the barcode and the QR code which store the following details:
 
 > 1. File Name
 > 2. User Name
@@ -34,7 +34,7 @@
 
 - Please reach us at `dnacloud@guptalab.org` for any queries related to this software.
 
-- For more information about DNA Cloud 3.14, check out [guptalab.org/dnacloud](www.guptalab.org/dnacloud)
+- For more information about DNA Cloud 3.2, check out [guptalab.org/dnacloud](www.guptalab.org/dnacloud)
 
 ## Instructions
 
@@ -45,12 +45,8 @@ $ python3 MainFrame.py
 ```
 
 ## Required Libraries/Dependencies
-
-**PyQt**
-
-- The version PyQt5 can be installed from &copy; [Riverbank Computing Limited](https://www.riverbankcomputing.com/software/pyqt/)
-
-- The GPL version of PyQt5 can also be installed from [PyPI](https://pypi.org/project/PyQt5/): 
+- Python version: 3.10.0
+- pip Dependencies: PyQt5, barcode, qrcode, hashlib, huffman, pycopy-webbrowser
 ```
- pip install PyQt5
+ pip install PyQt5 barcode qrcode hashlib huffman pycopy-webbrowser
 ```
