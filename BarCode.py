@@ -16,33 +16,11 @@ Website: www.guptalab.org/dnacloud
 
 import hashlib
 import barcode
+from barcode import generate
+from barcode.writer import ImageWriter 
+from PIL import PngImagePlugin
+from PIL import ImageFont
 import os
-import aspose.words as aw
-
-def svgToPng(fileName, filepath):
-
-    # create a document
-    doc = aw.Document()
-
-    # create a document builder and initialize it with document object
-    builder = aw.DocumentBuilder(doc)
-
-    # insert SVG image to document
-    shape = builder.insert_image(fileName)
-
-    # OPTIONAL
-    # Calculate the maximum width and height and update page settings 
-    # to crop the document to fit the size of the pictures.
-    pageSetup = builder.page_setup
-    pageSetup.page_width = shape.width
-    pageSetup.page_height = shape.height
-    pageSetup.top_margin = 0
-    pageSetup.left_margin = 0
-    pageSetup.bottom_margin = 0
-    pageSetup.right_margin = 0
-
-    # save as PNG
-    doc.save(filepath + ".png")    
 
 def hash_to_13_digits(number):
     # Convert the number to a string
@@ -60,12 +38,11 @@ def hash_to_13_digits(number):
     return result
 
 def generateBarcode(data, filename):
+    try:
+        code128 = barcode.get_barcode_class('code128')
+        code = code128(data, writer=ImageWriter())
 
-    code128 = barcode.get_barcode_class('code128')
-    code = code128(data)
-
-    # Save the barcode to an image file
-    code.save(filename+'_bar')
-    
-    svgToPng(filename+'_bar.svg', filename)
-    os.remove(filename+'_bar.svg')
+        # Save the barcode to an image file
+        _ = code.save(filename+'_bar')
+    except Exception as e:
+        print(e)

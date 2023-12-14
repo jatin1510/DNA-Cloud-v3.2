@@ -106,6 +106,7 @@ class InputDialog(QDialog):
 
     def init_ui(self):
         self.setWindowTitle('Contact Details')
+        self.setWindowIcon(QIcon("DNA_icon-8.png"))
         self.setGeometry(225, 400, 500, 300)  # Increase window size
 
         # Remove Help button
@@ -208,6 +209,7 @@ def TakeComment():
 class EncodeThread(QThread):
     # Used for indication how much percentage of action completed
     signalStatus = pyqtSignal(str)
+    signalError = pyqtSignal(str)
 
     def __init__(self, fileName, typeOfAction, parent=None):
         super(EncodeThread, self).__init__(parent)
@@ -215,18 +217,24 @@ class EncodeThread(QThread):
         # 0 for encodeGoldman , 1 for encodeGolay , 2 for decodeGoldman , 3 for decodeGolay
         self.typeOfAction = typeOfAction
 
-    def run(self):
-        if self.typeOfAction == 0:  # Goldman Encoding
-            GoldmanEncoding.encodeFile(self.fileName, self.signalStatus)
-        elif self.typeOfAction == 1:   # Golay Encoding
-            golayEncoding.encodeFile(self.fileName, self.signalStatus)
-        self.signalStatus.emit('Idle.')  # Indicating action is finished
+    def show_error_message(self, message):
+        self.signalError.emit(message)
 
+    def run(self):
+        try:
+            if self.typeOfAction == 0:  # Goldman Encoding
+                GoldmanEncoding.encodeFile(self.fileName, self.signalStatus)
+            elif self.typeOfAction == 1:   # Golay Encoding
+                golayEncoding.encodeFile(self.fileName, self.signalStatus)
+            self.signalStatus.emit('Idle.')  # Indicating action is finished
+        except Exception as e:
+            self.show_error_message("Error occured!!")
 # This object carries out decoding action of certain type
 
 class DecodeThread(QThread):
     # Used for indication how much percentage of action completed
     signalStatus = pyqtSignal(str)
+    signalError = pyqtSignal(str)
 
     def __init__(self, fileName, typeOfAction, parent=None):
         super(DecodeThread, self).__init__(parent)
@@ -235,19 +243,30 @@ class DecodeThread(QThread):
         self.typeOfAction = typeOfAction
         self.parent = parent
 
+    def show_error_message(self, message):
+        self.signalError.emit(message)
+
     def run(self):
-        if self.typeOfAction == 2:    # Goldman Decoding
-            GoldmanDecoding.decodeFile(self.fileName, self.signalStatus)
-        elif self.typeOfAction == 3:   # Golay Decoding
-            GolayDecode.decodeFile(self.fileName, self.signalStatus)
+        try:
+            if self.typeOfAction == 2:    # Goldman Decoding
+                GoldmanDecoding.decodeFile(self.fileName, self.signalStatus)
+            elif self.typeOfAction == 3:   # Golay Decoding
+                GolayDecode.decodeFile(self.fileName, self.signalStatus)
         # print("error")
-        self.signalStatus.emit('Idle.')  # Indicating action is finished
+            self.signalStatus.emit('Idle.')  # Indicating action is finished
+        except Exception as e:
+            # _ = Error("Error occured!!")
+            self.show_error_message("Error occured!!")
+            return
 
 # This object shows dialouge box for selecting encoding type
 class EncodeSelection(QDialog):
     def __init__(self, parent=None):
         super(EncodeSelection, self).__init__(parent)
         self.setWindowTitle("Encode")
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+        self.setWindowIcon(QIcon("DNA_icon-8.png"))
+
         self.initUI()
 
     def initUI(self):
@@ -316,7 +335,6 @@ def getActionType(typeOfAction,fileName = None, parent=None):
         try:
             line = myFile.readline()
             decodingType = line[9:-1]
-            print(decodingType)
             # decodingType = str(dialog.selectionComboBox.currentText())
             if decodingType == 'Goldman':
                 return 2
@@ -447,6 +465,7 @@ class ActionUI(QFrame):
         else:
             self.thread = DecodeThread(fileName, encodingType)
         self.thread.signalStatus.connect(self.updateStatus)
+        self.thread.signalError.connect(Error)
         self.thread.start()
 
     def updateStatus(self, status):
