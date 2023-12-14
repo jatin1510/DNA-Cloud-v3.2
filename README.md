@@ -1,4 +1,4 @@
-# <p align="center">DNA_Cloud_3.2</p>
+# <p align="center">DNA Cloud 3.2</p>
 <p align="center">
 <img src="https://www.guptalab.org/dnacloud/assets/img/logo.png" width="200">
 </p>
