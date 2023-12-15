@@ -48,5 +48,5 @@ $ python3 MainFrame.py
 - Python version: 3.10.0
 - pip Dependencies: PyQt5, barcode, qrcode, hashlib, huffman, pycopy-webbrowser
 ```
- pip install PyQt5 barcode qrcode hashlib huffman pycopy-webbrowser
+ pip install PyQt5 python-barcode qrcode hashlib huffman pycopy-webbrowser
 ```
