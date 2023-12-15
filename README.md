@@ -14,6 +14,8 @@
 > 3. User's Contact Number
 > 4. Unique Sample ID
 
+- In addition, this version also includes the error correction tool which uses the clustering algorithm.
+  
 - DNA Cloud has been developed to generate a user-friendly, interactive environment for users to envisage their DNA data storage.
 
 ## About Us
