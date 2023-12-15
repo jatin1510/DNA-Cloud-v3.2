@@ -35,6 +35,15 @@ import re
 import time
 import Error_Detection_Correction
 
+
+import sys
+import os
+ 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
 # Generalize Error 
     
 def Error(errorMessage):
@@ -106,7 +115,7 @@ class InputDialog(QDialog):
 
     def init_ui(self):
         self.setWindowTitle('Contact Details')
-        self.setWindowIcon(QIcon("DNA_icon-8.png"))
+        self.setWindowIcon(QIcon(resource_path("DNA_icon-8.png")))
         self.setGeometry(225, 400, 500, 300)  # Increase window size
 
         # Remove Help button
@@ -226,9 +235,9 @@ class EncodeThread(QThread):
                 GoldmanEncoding.encodeFile(self.fileName, self.signalStatus)
             elif self.typeOfAction == 1:   # Golay Encoding
                 golayEncoding.encodeFile(self.fileName, self.signalStatus)
-            self.signalStatus.emit('Idle.')  # Indicating action is finished
         except Exception as e:
             self.show_error_message("Error occured!!")
+        self.signalStatus.emit('Idle.')  # Indicating action is finished
 # This object carries out decoding action of certain type
 
 class DecodeThread(QThread):
@@ -253,11 +262,10 @@ class DecodeThread(QThread):
             elif self.typeOfAction == 3:   # Golay Decoding
                 GolayDecode.decodeFile(self.fileName, self.signalStatus)
         # print("error")
-            self.signalStatus.emit('Idle.')  # Indicating action is finished
         except Exception as e:
             # _ = Error("Error occured!!")
             self.show_error_message("Error occured!!")
-            return
+        self.signalStatus.emit('Idle.')  # Indicating action is finished
 
 # This object shows dialouge box for selecting encoding type
 class EncodeSelection(QDialog):
@@ -265,7 +273,7 @@ class EncodeSelection(QDialog):
         super(EncodeSelection, self).__init__(parent)
         self.setWindowTitle("Encode")
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
-        self.setWindowIcon(QIcon("DNA_icon-8.png"))
+        self.setWindowIcon(QIcon(resource_path("DNA_icon-8.png")))
 
         self.initUI()
 
@@ -318,21 +326,31 @@ def getActionType(typeOfAction,fileName = None, parent=None):
         dialog = EncodeSelection(parent)
         result = dialog.exec_()
         if(result == 1):
+            indexDot = fileName.rfind('.')
+            fileNameWithoutExtension = fileName[:indexDot]
+            input_details = TakeComment()
             encodingType = str(dialog.selectionComboBox.currentText())
-            if encodingType == 'Goldman':
-                return 0
-            elif encodingType == 'Golay':
-                return 1
-            return -1
+            if(input_details):
+                encodedData = BarCode.hash_to_13_digits(input_details[2] + str(time.time()))
+                QRCode.generateQR("File name: " + os.path.basename(fileName) + "\nName: " + input_details[0] + "\nEmail: " + input_details[1] + "\nMobile Number: " + input_details[2] + "\nSample ID: " + encodedData, fileNameWithoutExtension)
+                BarCode.generateBarcode(str(encodedData), fileNameWithoutExtension)
+                if encodingType == 'Goldman':
+                    return 0
+                elif encodingType == 'Golay':
+                    return 1
+                else:
+                    return -1
+            else:
+                return -1
         else:
             return -1
     else:
         # dialog = DecodeSelection(parent)
         # result = dialog.exec_()
-        myFile = io.open(fileName, "r")
-        _ = myFile.readline()
-        _ = myFile.readline()
         try:
+            myFile = io.open(fileName, "r")
+            _ = myFile.readline()
+            _ = myFile.readline()
             line = myFile.readline()
             decodingType = line[9:-1]
             # decodingType = str(dialog.selectionComboBox.currentText())
@@ -340,9 +358,9 @@ def getActionType(typeOfAction,fileName = None, parent=None):
                 return 2
             elif decodingType == 'Golay':
                 return 3
-            return -1
-        except:
-            return -1
+            return 10
+        except Exception as e:
+            return 10
 
 
 # Used for identifying any action
@@ -407,11 +425,19 @@ class ActionUI(QFrame):
         reverseFilename = linkToFile[::-1]
         indexDot = reverseFilename.find('.')
         if indexDot == -1:
+            Error("File has no extension!!")
             return
         
         actionType = getActionType(self.actionType,linkToFile)
         if actionType > 1 and linkToFile[-1*indexDot:] != "dnac":
             Error("File is not in .dnac format!!")
+            return
+        
+        if(actionType == -1):
+            return
+        
+        if(actionType == 10):
+            Error("File does not have proper dnac format!!")
             return
 
         textView = QLabel(linkToFile)
@@ -449,24 +475,18 @@ class ActionUI(QFrame):
         fileName = self.processQueue[0].fileName
         encodingType = self.processQueue[0].encodingType
 
-        if (encodingType <= 1):
-
-            indexDot = fileName.rfind('.')
-            fileNameWithoutExtension = fileName[:indexDot]
-            input_details = TakeComment()
-            if(input_details):
-                encodedData = BarCode.hash_to_13_digits(input_details[2] + str(time.time()))
-                QRCode.generateQR("File name: " + os.path.basename(fileName) + "\nName: " + input_details[0] + "\nEmail: " + input_details[1] + "\nMobile Number: " + input_details[2] + "\nSample ID: " + encodedData, fileNameWithoutExtension)
-                BarCode.generateBarcode(str(encodedData), fileNameWithoutExtension)
-
-                self.thread = EncodeThread(fileName, encodingType)
-            else:
-                return
-        else:
+        if (encodingType == 1 or encodingType == 0):
+            self.thread = EncodeThread(fileName, encodingType)
+        elif(encodingType == 2 or encodingType == 3):
             self.thread = DecodeThread(fileName, encodingType)
-        self.thread.signalStatus.connect(self.updateStatus)
-        self.thread.signalError.connect(Error)
-        self.thread.start()
+
+        try:
+            self.thread.signalStatus.connect(self.updateStatus)
+            self.thread.signalError.connect(Error)
+            self.thread.start()
+        except:
+            print("Error")
+            self.thread.exit()
 
     def updateStatus(self, status):
         if status != 'Idle.':
@@ -499,8 +519,8 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setWindowTitle('DNA 3.2')
-        self.setWindowIcon(QIcon("DNA_icon-8.png"))
+        self.setWindowTitle('DNA Cloud 3.2')
+        self.setWindowIcon(QIcon(resource_path("DNA_icon-8.png")))
         self.initUI()
 
     def initUI(self):
@@ -543,7 +563,7 @@ class MainWindow(QMainWindow):
         self.costEstimatorAction.setStatusTip(
             'Predicts approximate cost to encode in DNA')
         self.costEstimatorAction.triggered.connect(self.showCostEstimator)
-        self.clusterAction = QAction('&Clustering error correction', self)
+        self.clusterAction = QAction('&Clustering Error Correction', self)
         # self.clusterAction.setShortcut('Ctrl')
         self.clusterAction.setStatusTip('Clustering error correcting code')
         self.clusterAction.triggered.connect(self.cluster)

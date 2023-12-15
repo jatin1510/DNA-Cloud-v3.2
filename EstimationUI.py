@@ -30,6 +30,8 @@ class CostEstimation(QDialog):
     def __init__(self, parent=None):
         super(CostEstimation, self).__init__(parent)
         self.setWindowTitle("Cost Estimator")
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+
         self.initUI()
 
     def initUI(self):
@@ -90,6 +92,8 @@ class MemoryEstimation(QDialog):
     def __init__(self, parent=None):
         super(MemoryEstimation, self).__init__(parent)
         self.setWindowTitle("Storage Estimator")
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+
         self.initUI()
 
     def initUI(self):
@@ -149,6 +153,10 @@ class Version(QDialog):
     def __init__(self, parent=None):
         super(Version, self).__init__(parent)
         self.setWindowTitle("Version")
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+
+        self.setFixedWidth(200)
+        self.setFixedHeight(100)
         self.initUI()
 
     def initUI(self):
@@ -161,6 +169,8 @@ class Email_Id(QDialog):
     def __init__(self, parent=None):
         super(Email_Id, self).__init__(parent)
         self.setWindowTitle("Email ID")
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+
         self.initUI()
 
     def initUI(self):
